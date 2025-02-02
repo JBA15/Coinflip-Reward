@@ -67,6 +67,9 @@ contract Simulation is Script {
 
         // Step 1: user1 plays on V1 and wins -> should have 5 DAU
         console.log("---- Playing game on V1 ----");
+
+        vm.stopBroadcast();
+        
         vm.prank(user1);
         // Passing a dummy array of 10 that matches getFlips
         uint8[10] memory guesses = [1,1,1,1,1,1,1,1,1,1];
@@ -100,8 +103,5 @@ contract Simulation is Script {
 
         console.log("User1's DAU balance:", dauphinetoken.balanceOf(user1));
         console.log("User2's DAU balance:", dauphinetoken.balanceOf(user2));
-
-        // End broadcasting
-        vm.stopBroadcast();
     }
 }
