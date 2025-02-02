@@ -35,7 +35,7 @@ contract CoinflipUpgradeTest is Test {
     /////////////////////////////////////////////////////
     ////      Test if V1 is initialized correctly    ////
     /////////////////////////////////////////////////////
-    function test_V1InitialSeed() public view {
+    function test_V1InitialSeed() public {
         assertEq(wrappedV1.seed(), "It is a good practice to rotate seeds often in gambling");
     }
 
@@ -44,7 +44,7 @@ contract CoinflipUpgradeTest is Test {
     ////              winning predictably            ////
     /////////////////////////////////////////////////////
 
-    function test_V1Win() public view {
+    function test_V1Win() public {
         assertEq(wrappedV1.userInput([1,0,0,0,1,1,1,1,0,1]), true);
     }
 

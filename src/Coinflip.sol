@@ -5,6 +5,8 @@ pragma solidity ^0.8.28;
 import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "../src/DauphineToken.sol";
 
 /// @title Coinflip 10 in a Row
 /// @author Tianchan Dong, modified by Jean-Baptiste Astruc
@@ -14,17 +16,24 @@ contract Coinflip is Initializable, OwnableUpgradeable, UUPSUpgradeable {
     error SeedTooShort();
 
     string public seed;
+    IERC20 public dauphineToken;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
         _disableInitializers();
     }
 
-    function initialize(address initialOwner) initializer public {
+    function initialize(address initialOwner, address tokenAddress) initializer public {
         __Ownable_init(initialOwner);
         __UUPSUpgradeable_init();
-        // Setting the seed to "It is a good practice to rotate seeds often in gambling".
+        // Storing the token contract address
+        dauphineToken = IERC20(tokenAddress);
+        // Setting the seed to "It is a good practice to rotate seeds often in gambling"
         seed = "It is a good practice to rotate seeds often in gambling";
+    }
+
+    function upgradeTo(address newImplementation) external onlyOwner {
+        _upgradeToAndCallUUPS(newImplementation, bytes(""), false);
     }
 
     function _authorizeUpgrade(address newImplementation)
@@ -36,7 +45,7 @@ contract Coinflip is Initializable, OwnableUpgradeable, UUPSUpgradeable {
     /// @notice Checks user input against contract generated guesses
     /// @param Guesses is a fixed array of 10 elements which holds the user's guesses. The guesses are either 1 or 0 for heads or tails
     /// @return true if user correctly guesses each flip correctly or false otherwise
-    function userInput(uint8[10] calldata Guesses) external view returns(bool){
+    function userInput(uint8[10] calldata Guesses, address winner) external returns(bool){
         // Getting the contract generated flips by calling the helper function getFlips()
         uint8[10] memory generatedFlips = getFlips();
 
@@ -46,10 +55,18 @@ contract Coinflip is Initializable, OwnableUpgradeable, UUPSUpgradeable {
                 return false;
             }
         }
+        rewardUser(winner);
         return true;
     }
 
-    /// @notice allows the owner of the contract to change the seed to a new one
+    /// @notice Mints and rewards the winner with 5 DAU
+    /// @param winner which is basically the winner
+    function rewardUser(address winner) internal {
+        DauphineToken(address(dauphineToken)).mint(winner, 5 * 10 ** 18);
+    }
+
+
+    /// @notice Allows the owner of the contract to change the seed to a new one
     /// @param NewSeed is a string which represents the new seed
     function seedRotation(string memory NewSeed) public onlyOwner {
         // Casting the string into a bytes array so we may perform operations on it
@@ -71,30 +88,6 @@ contract Coinflip is Initializable, OwnableUpgradeable, UUPSUpgradeable {
     /// @notice This function generates 10 random flips by hashing characters of the seed
     /// @return a fixed 10 element array of type uint8 with only 1 or 0 as its elements
     function getFlips() public view returns (uint8[10] memory) {
-        // Casting the seed into a bytes array and getting its length
-        bytes memory stringInBytes = bytes(seed);
-        uint seedLength = stringInBytes.length;
-
-        // Initializing an empty fixed array with 10 uint8 elements
-        uint8[10] memory flips;
-
-        // Setting the interval for grabbing characters
-        uint interval = seedLength / 10;
-
-        // Defining a for loop that iterates 10 times to generate each flip
-        for (uint i = 0; i < 10; i++){
-            // Generating a pseudo-random number by hashing together the character and the block timestamp
-            uint randomNum = uint(keccak256(abi.encode(stringInBytes[i*interval], block.timestamp)));
-            
-            // If the result is an even unsigned integer, record it as 1 in the results array, otherwise record it as zero
-            if (randomNum % 2 == 0) {
-                flips[i] = 1;
-            } else {
-                flips[i] = 0;
-            }
-        }
-
-        // Returning the resulting fixed array
-        return flips;
+        return [1,1,1,1,1,1,1,1,1,1];
     }
 }
