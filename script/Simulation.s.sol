@@ -2,7 +2,6 @@
 pragma solidity ^0.8.28;
 
 import "forge-std/Script.sol";
-import "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import "../src/Coinflip.sol";
 import "../src/CoinflipV2.sol";
 import "../src/DauphineToken.sol";
@@ -82,7 +81,7 @@ contract Simulation is Script {
         console.log("Deployed Coinflip V2 logic at:", address(coinflipImplV2));
 
         // Performing the upgrade
-        coinflip.upgradeTo(address(coinflipImplV2));
+        coinflip.upgradeToAndCall(address(coinflipImplV2), "");
         console.log("Upgraded coinflip proxy to V2!");
 
         // Casting the coinflip proxy to V2
