@@ -33,8 +33,10 @@ contract Coinflip is Initializable, OwnableUpgradeable, UUPSUpgradeable {
     }
 
     function upgradeTo(address newImplementation) external onlyOwner {
+        _authorizeUpgrade(newImplementation);
         _upgradeToAndCallUUPS(newImplementation, bytes(""), false);
     }
+    
 
     function _authorizeUpgrade(address newImplementation)
         internal
