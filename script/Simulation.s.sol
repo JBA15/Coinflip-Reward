@@ -8,7 +8,7 @@ import "../src/DauphineToken.sol";
 import "../src/Proxy.sol";
 
 contract Simulation is Script {
-    // Hardcode some addresses for user1 and user2, or derive them with vm.addr(...)
+    // Defining addresses user1 and user2
     address user1;
     address user2;
 
@@ -19,7 +19,7 @@ contract Simulation is Script {
     function run() external {
         vm.startBroadcast();
 
-        user1 = vm.addr(7689); // or any random number
+        user1 = vm.addr(7689);
         user2 = vm.addr(7897);
 
         // Deploying the token implementation
@@ -46,7 +46,7 @@ contract Simulation is Script {
         // Deploy Coinflip
         Coinflip coinflipImpl = new Coinflip();
         
-        // Encoding initialize data for V1
+        // Encoding initialize data for the first version
         bytes memory coinflipInitData = abi.encodeWithSelector(
             Coinflip.initialize.selector,
             address(this),         
@@ -59,19 +59,20 @@ contract Simulation is Script {
             coinflipInitData
         );
 
-        // Casting the proxy as V1
+        // Casting the proxy as the first version
         coinflip = Coinflip(address(coinflipProxy));
 
         console.log("Coinflip proxy deployed at:", address(coinflip));
         console.log("Coinflip owner is:", coinflip.owner());
 
-        // Step 1: user1 plays on V1 and wins -> should have 5 DAU
+        // Step 1: user1 plays on V1 and wins and should obtain 5 DAU
         console.log("---- Playing game on V1 ----");
 
         vm.stopBroadcast();
         
         vm.prank(user1);
-        // Passing a dummy array of 10 that matches getFlips
+
+        // Passing a dummy array of 10 that matches getFlips to be sure the user wins
         uint8[10] memory guesses = [1,1,1,1,1,1,1,1,1,1];
         coinflip.userInput(guesses, user1);
 
