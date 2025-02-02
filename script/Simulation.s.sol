@@ -7,6 +7,10 @@ import "../src/CoinflipV2.sol";
 import "../src/DauphineToken.sol";
 import "../src/Proxy.sol";
 
+/// @title Simulation
+/// @author Jean-Baptiste Astruc
+/// @notice Script to operate the simulation of Exercise 3
+
 contract Simulation is Script {
     // Defining addresses user1 and user2
     address user1;
