@@ -41,7 +41,7 @@ contract Simulation is Script {
         dauphinetoken = DauphineToken(address(tokenProxy));
 
         console.log("DauphineToken proxy deployed at:", address(dauphinetoken));
-        console.log("  DauphineToken owner is:", dauphinetoken.owner());
+        console.log("DauphineToken owner is:", dauphinetoken.owner());
 
         // Deploy Coinflip
         Coinflip coinflipImpl = new Coinflip();
@@ -91,6 +91,23 @@ contract Simulation is Script {
         // Casting the coinflip proxy to V2
         CoinflipV2 coinflipV2 = CoinflipV2(address(coinflipProxy));
 
+        // Logging the current seed before rotation (optional)
+        console.log("Current seed:", coinflipV2.seed());
+        
+        // Defining a known seed input and rotation amount
+        string memory initialSeed = "1234567890";
+        uint8 rotationAmount = 5;
+
+        // Confirming the owner
+        console.log("CoinflipV2 owner is:", coinflipV2.owner());
+        
+        // Performing the seed rotation
+        coinflipV2.seedRotation(initialSeed, rotationAmount);
+        
+        // Retrieving and log the new seed
+        string memory newSeed = coinflipV2.seed();
+        console.log("New seed after rotation:", newSeed);
+
         // Step 3: user1 plays on V2 and wins 10 DAU
         vm.prank(user1);
         coinflipV2.userInput(guesses, user1);
@@ -98,7 +115,7 @@ contract Simulation is Script {
         console.log("User1's DAU balance after winning on V2:", dauphinetoken.balanceOf(user1));
 
         // Step 4: user1 transfers some DAU to user2
-        console.log("---- Transferring tokens from user1 -> user2 ----");
+        console.log("---- Transferring tokens from user1 to user2 ----");
         vm.prank(user1);
         dauphinetoken.transfer(user2, 3e18);
 
