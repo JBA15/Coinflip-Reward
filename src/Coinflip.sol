@@ -32,12 +32,6 @@ contract Coinflip is Initializable, OwnableUpgradeable, UUPSUpgradeable {
         seed = "It is a good practice to rotate seeds often in gambling";
     }
 
-    function upgradeTo(address newImplementation) external onlyOwner {
-        _authorizeUpgrade(newImplementation);
-        _upgradeToAndCallUUPS(newImplementation, bytes(""), false);
-    }
-    
-
     function _authorizeUpgrade(address newImplementation)
         internal
         onlyOwner

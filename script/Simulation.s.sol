@@ -6,6 +6,7 @@ import "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import "../src/Coinflip.sol";
 import "../src/CoinflipV2.sol";
 import "../src/DauphineToken.sol";
+import "../src/Proxy.sol";
 
 contract Simulation is Script {
     // Hardcode some addresses for user1 and user2, or derive them with vm.addr(...)
@@ -32,7 +33,7 @@ contract Simulation is Script {
         );
 
         // Deploying the token proxy
-        ERC1967Proxy tokenProxy = new ERC1967Proxy(
+        UUPSProxy tokenProxy = new UUPSProxy(
             address(tokenImpl),
             tokenInitData
         );
@@ -46,15 +47,15 @@ contract Simulation is Script {
         // Deploy Coinflip
         Coinflip coinflipImpl = new Coinflip();
         
-        // 5. Encode initialize data for V1
+        // Encoding initialize data for V1
         bytes memory coinflipInitData = abi.encodeWithSelector(
             Coinflip.initialize.selector,
             address(this),         
             address(dauphinetoken)  
         );
 
-        // 6. Deploy the Coinflip proxy
-        ERC1967Proxy coinflipProxy = new ERC1967Proxy(
+        // Deploying the Coinflip proxy
+        UUPSProxy coinflipProxy = new UUPSProxy(
             address(coinflipImpl),
             coinflipInitData
         );
